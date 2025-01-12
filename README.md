@@ -262,9 +262,12 @@ sudo nginx -t
 
 Remove the default configuration if it is enabled:
 
-````bash
+```bash
 sudo rm /etc/nginx/sites-enabled/default
 sudo systemctl restart nginx
+
 ```
 
-Acess your website at ```https://cal.chiralsoftware.com/nextcloud```
+
+
+Acess your website at ``` https://cal.chiralsoftware.com/nextcloud ```

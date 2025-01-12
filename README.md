@@ -181,6 +181,13 @@ http {
     ssl_prefer_server_ciphers on;
 }
 ```
+Ensure the Nextcloud directory is properly set up and owned by the www-data user:
+
+```bash
+sudo chown -R www-data:www-data /var/www/nextcloud
+sudo chmod -R 755 /var/www/nextcloud
+```
+
 Create nextcloud's nginx configuration:
 
 ```bash
@@ -251,6 +258,12 @@ Enable the newly created nginx configuration:
 ```bash
 sudo ln -s /etc/nginx/sites-available/nextcloud /etc/nginx/sites-enabled/
 sudo nginx -t
+```
+
+Remove the default configuration if it is enabled:
+
+````bash
+sudo rm /etc/nginx/sites-enabled/default
 sudo systemctl restart nginx
 ```
 

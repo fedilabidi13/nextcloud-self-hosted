@@ -137,7 +137,7 @@ Update nginx.conf
 sudo nano /etc/nginx/nginx.conf
 ```
 Paste the following content: 
-```json
+```nginx
 user www-data;
 worker_processes auto;
 pid /run/nginx.pid;
@@ -189,7 +189,7 @@ sudo nano /etc/nginx/sites-available/nextcloud
 
 Paste the following content: 
 
-```json
+```nginx
 upstream php-handler {
     server unix:/var/run/php/php8.3-fpm.sock;
 }
@@ -253,3 +253,5 @@ sudo ln -s /etc/nginx/sites-available/nextcloud /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 ```
+
+Acess your website at ```https://cal.chiralsoftware.com/nextcloud```

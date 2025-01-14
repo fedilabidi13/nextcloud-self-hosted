@@ -117,7 +117,6 @@ http {
     sendfile on;
     tcp_nopush on;
     tcp_nodelay on;
-    keepalive_timeout 65;
     types_hash_max_size 2048;
 
     # Gzip Settings

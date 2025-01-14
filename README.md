@@ -10,7 +10,10 @@
 Install Nginx, MariaDB, PHP, and other dependencies:
 ```bash
 sudo apt update && sudo apt upgrade -y
-sudo apt install nginx mariadb-server php-fpm php-mysql php-common php-xml php-mbstring php-curl php-zip php-gd php-intl php-bz2 php-imagick unzip wget -y
+sudo apt install -y nginx mariadb-server \
+php8.3 php8.3-fpm php8.3-mysql php8.3-common php8.3-xml \
+php8.3-mbstring php8.3-curl php8.3-zip php8.3-gd \
+php8.3-intl php8.3-bz2 php8.3-imagick unzip wget
 ```
 ### Step 2: Secure MariaDB
 

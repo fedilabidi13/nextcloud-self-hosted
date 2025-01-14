@@ -65,45 +65,6 @@ upload_max_filesize = 100M
 post_max_size = 100M
 max_execution_time = 300
 ```
-Adjust nextcloud php configuration:
-```bash
-sudo nano /var/www/nextcloud/config/config.php
-```
-Use the following content:
-
-```php
-<?php
-$CONFIG = array (
-  'instanceid' => 'occo4hbaii6l',
-  'passwordsalt' => '1lFwtMnyEPwKflOIUmk3UTiGerAvKM',
-  'secret' => 't2NIQVQF5xEYb3Nlaa9kI2yGyvbvYQJPm6Tdg0mDf+P769A3',
-  'trusted_domains' =>
-  array (
-    0 => 'cal.chiralsoftware.com',
-    1 => 'localhost',
-    2 => '173.198.59.60',
-  ),
-  'datadirectory' => '/var/www/nextcloud/data',
-  'dbtype' => 'mysql',
-  'version' => '30.0.4.1',
-  'overwrite.cli.url' => 'https://cal.chiralsoftware.com/nextcloud',
-  'htaccess.RewriteBase' => '/nextcloud',
-  'overwriteprotocol' => 'https',
-  'dbname' => 'nextcloud',
-  'dbhost' => 'localhost',
-  'dbport' => '',
-  'dbtableprefix' => 'oc_',
-  'mysql.utf8mb4' => true,
-  'dbuser' => 'nextclouduser',
-  'dbpassword' => 'pass',
-  'installed' => true,
-  'maintenance' => false,
-  'app_install_overwrite' =>
-  array (
-    0 => 'integration_nepenthes',
-  ),
-);
-```
 
 Restart PHP-FPM:
 ```bash
@@ -165,6 +126,13 @@ http {
     gzip_buffers 16 8k;
     gzip_http_version 1.1;
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    
+    
+    # Increase timeouts
+    client_body_timeout 120s;
+    client_header_timeout 120s;
+    keepalive_timeout 120s;
+    send_timeout 120s;
 
     # Logging Settings
     access_log /var/log/nginx/access.log;
@@ -269,5 +237,16 @@ sudo systemctl restart nginx
 ```
 
 
+### Nextcloud UI installation
+Acess nextcloud at ``` https://cal.chiralsoftware.com/nextcloud ``` 
 
-Acess your website at ``` https://cal.chiralsoftware.com/nextcloud ```
+You'll be prompted to create a admin user.
+* Choose your desired admin username and password.
+
+
+You'll be prompted to establish MySQL database connection.
+Fill the fields accordingly:
+* Database account: ```nextclouduser```
+* Database name: ```nextcloud```
+* Database password: ```password```
+* Database host: ```localhost```

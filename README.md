@@ -96,61 +96,7 @@ sudo certbot --nginx -d cal.chiralsoftware.com
 * Certbot will prompt you to provide an email address and agree to the terms.
 * It will automatically modify your Nginx configuration to use SSL.
 
-Update nginx.conf
-```bash
-sudo nano /etc/nginx/nginx.conf
-```
-Paste the following content: 
-```nginx
-user www-data;
-worker_processes auto;
-pid /run/nginx.pid;
 
-events {
-    worker_connections 1024;
-}
-
-http {
-    include /etc/nginx/mime.types;
-    default_type application/octet-stream;
-
-    sendfile on;
-    tcp_nopush on;
-    tcp_nodelay on;
-    types_hash_max_size 2048;
-
-    # Gzip Settings
-    gzip on;
-    gzip_disable "msie6";
-    gzip_vary on;
-    gzip_proxied any;
-    gzip_comp_level 6;
-    gzip_buffers 16 8k;
-    gzip_http_version 1.1;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-    
-    
-    # Increase timeouts
-    client_body_timeout 120s;
-    client_header_timeout 120s;
-    keepalive_timeout 120s;
-    send_timeout 120s;
-
-    # Logging Settings
-    access_log /var/log/nginx/access.log;
-    error_log /var/log/nginx/error.log;
-
-    # Virtual Host Configs
-    include /etc/nginx/conf.d/*.conf;
-    include /etc/nginx/sites-enabled/*;
-
-    # SSL Settings
-    ssl_session_cache shared:SSL:10m;
-    ssl_session_timeout 1d;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_prefer_server_ciphers on;
-}
-```
 Ensure the Nextcloud directory is properly set up and owned by the www-data user:
 
 ```bash
@@ -158,75 +104,59 @@ sudo chown -R www-data:www-data /var/www/nextcloud
 sudo chmod -R 755 /var/www/nextcloud
 ```
 
-Create nextcloud's nginx configuration:
+uodate chiralsoftware.com's nginx configuration:
 
 ```bash
-sudo nano /etc/nginx/sites-available/nextcloud
+sudo nano /etc/nginx/sites-available/chiralsoftware.com
 ```
 
-Paste the following content: 
+add the following block: 
 
 ```nginx
-upstream php-handler {
-    server unix:/var/run/php/php8.3-fpm.sock;
+location /nextcloud {
+
+
+
+root /var/www;
+
+
+
+# PHP handling
+location ~ \.php(?:$|/) {
+fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+try_files $fastcgi_script_name =404;
+
+
+
+include fastcgi_params;
+fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+fastcgi_param PATH_INFO $fastcgi_path_info;
+fastcgi_param HTTPS on;
+
+
+
+fastcgi_pass unix:/var/run/php/php-fpm.sock;
+
+
+
+# Nextcloud specific PHP settings (timeouts, etc.)
+fastcgi_read_timeout 300s; # adjust based on your needs
+fastcgi_send_timeout 300s; # adjust based on your needs
+
+
+
 }
 
-server {
-    listen 80;
-    listen [::]:80;
-    server_name cal.chiralsoftware.com;
-    return 301 https://$host$request_uri;
-}
 
-server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    server_name cal.chiralsoftware.com;
 
-    # Basic root path
-    root /var/www;
-    index index.php;
-
-    # SSL Configuration
-    ssl_certificate /etc/letsencrypt/live/cal.chiralsoftware.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/cal.chiralsoftware.com/privkey.pem;
-    ssl_trusted_certificate /etc/letsencrypt/live/cal.chiralsoftware.com/chain.pem;
-
-    # Basic settings
-    client_max_body_size 512M;
-    fastcgi_buffers 64 4K;
-    types {
-        text/javascript js mjs;
-        text/css css;
-        text/html html htm;
-        application/json json;
-        image/svg+xml svg;
-    }
-    # Handle PHP files
-    location ~ \.php(?:$|/) {
-        fastcgi_split_path_info ^(.+?\.php)(/.*)$;
-        try_files $fastcgi_script_name =404;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param PATH_INFO $fastcgi_path_info;
-        fastcgi_param HTTPS on;
-        fastcgi_pass php-handler;
-    }
-
-    # Default location
-    location /nextcloud {
-        try_files $uri $uri/ /index.php$request_uri;
-    }
-    # Redirect root (/) to /nextcloud
-    location = / {
-        return 301 https://$host/nextcloud;
-    }
+# Try files (check if file exists)
+try_files $uri $uri/ /nextcloud/index.php$request_uri;
 }
 ```
 Enable the newly created nginx configuration: 
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/nextcloud /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/chiralsoftware.com /etc/nginx/sites-enabled/
 sudo nginx -t
 ```
 
@@ -240,7 +170,7 @@ sudo systemctl restart nginx
 
 
 ### Nextcloud UI installation
-Acess nextcloud at ``` https://cal.chiralsoftware.com/nextcloud ``` 
+Acess nextcloud at ``` https://chiralsoftware.com/nextcloud ``` 
 
 You'll be prompted to create a admin user.
 * Choose your desired admin username and password.
